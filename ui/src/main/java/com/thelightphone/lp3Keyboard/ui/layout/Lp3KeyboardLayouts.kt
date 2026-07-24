@@ -24,9 +24,10 @@ import com.thelightphone.lp3Keyboard.ui.SpecialKey
 import com.thelightphone.lp3Keyboard.ui.ThirdRow
 import com.thelightphone.lp3Keyboard.ui.viewmodel.EnColemakLp3KeyboardViewModel
 import com.thelightphone.lp3Keyboard.ui.viewmodel.EnQwertyLp3KeyboardViewModel
-import com.thelightphone.lp3Keyboard.ui.viewmodel.SvQwertyLp3KeyboardViewModel
 import com.thelightphone.lp3Keyboard.ui.viewmodel.Lp3KeyboardViewModel
 import com.thelightphone.lp3Keyboard.ui.viewmodel.Lp3RepeatableKeyboardCallback
+import com.thelightphone.lp3Keyboard.ui.viewmodel.NoQwertyLp3KeyboardViewModel
+import com.thelightphone.lp3Keyboard.ui.viewmodel.SvQwertyLp3KeyboardViewModel
 import com.thelightphone.lp3Keyboard.ui.viewmodel.defaultEmojis
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,7 +41,8 @@ enum class LayoutRegistryItem(
 ) {
     EnQwerty(Locale.ENGLISH, "qwerty", "QWERTY (English)"),
     EnColemak(Locale.ENGLISH, "colemak", "Colemak (English)"),
-    SvQwerty(Locale.forLanguageTag("sv"), "qwerty", "QWERTY (Swedish)")
+    SvQwerty(Locale.forLanguageTag("sv"), "qwerty", "QWERTY (Swedish)"),
+    NoQwerty(Locale.forLanguageTag("no"), "qwerty", "QWERTY (Norwegian)")
     ;
 
     val uniqueId: String = "${locale}_$variant"
@@ -72,6 +74,13 @@ fun <SwipeResultType> LayoutRegistryItem.buildRootViewModel(
         )
 
         LayoutRegistryItem.SvQwerty -> SvQwertyLp3KeyboardViewModel(
+            passedCallback,
+            swipeCallback,
+            haptic,
+            optionsForLayout
+        )
+
+        LayoutRegistryItem.NoQwerty -> NoQwertyLp3KeyboardViewModel(
             passedCallback,
             swipeCallback,
             haptic,
