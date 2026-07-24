@@ -114,6 +114,12 @@ object EnShared {
         'c'.code to listOf(
             listOf('ç', 'ć', 'č'),
         ),
+        'D'.code to listOf(
+            listOf('Ð'),
+        ),
+        'd'.code to listOf(
+            listOf('ð'),
+        ),
         'E'.code to listOf(
             listOf('È', 'É', 'Ê', 'Ë', 'Ē', 'Ė', 'Ę'),
         ),
@@ -150,6 +156,12 @@ object EnShared {
         's'.code to listOf(
             listOf('ß', 'ś', 'š'),
         ),
+        'T'.code to listOf(
+            listOf('Þ'),
+        ),
+        't'.code to listOf(
+            listOf('þ'),
+        ),
         'U'.code to listOf(
             listOf('Û', 'Ü', 'Ù', 'Ú', 'Ū'),
         ),
@@ -157,10 +169,10 @@ object EnShared {
             listOf('û', 'ü', 'ù', 'ú', 'ū'),
         ),
         'Y'.code to listOf(
-            listOf('Ÿ'),
+            listOf('Ý', 'Ÿ'),
         ),
         'y'.code to listOf(
-            listOf('ÿ'),
+            listOf('ý', 'ÿ'),
         ),
         'Z'.code to listOf(
             listOf('Ž', 'Ź', 'Ż'),
