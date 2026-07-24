@@ -1,53 +1,25 @@
-# LPIII Keyboard
+# light-keyboard-prep
 
-A Compose implementation of the Light Phone's keyboard. To be used in LightOS, community tools, and/or as an Android system keyboard.
+Contribution prep for [`lightphone/light-keyboard`](https://github.com/lightphone/light-keyboard):
+Nordic keyboard layouts for the Light Phone III, plus a sideload build with
+offline Swedish autocorrect and dictation.
 
-**Note that as of July 1, 2026, public releases of LightOS are not yet using this as the embedded keyboard. Coming soon!**
+This is a **clone of upstream** (`main` = pristine upstream `v0.0.16`). Each piece
+of work is its own branch, ready to become a fork branch and a PR.
 
-If you'd like to contribute/file issues, please read [CONTRIBUTING.md](CONTRIBUTING.md). For general questions/comments about the keyboard, please head to our [discussions](https://github.com/orgs/lightphone/discussions/categories/keyboard) page.
+See **[PREP-STATUS.md](PREP-STATUS.md)** for the full branch map, what's verified,
+what still needs doing, and the exact issue/PR process to follow.
+Research and rationale live in **[docs/](docs/)**.
 
-### Layouts
+## Branches at a glance
 
-Currently, only English/QWERTY is supported. We want to add more languages/layouts as soon as possible. Please reach out if there are any you are particularly excited about!
+| Branch | What | Destination |
+|---|---|---|
+| `main` | untouched upstream `v0.0.16` | — |
+| `sv-qwerty` | Swedish QWERTY layout, zero public-API changes | first PR |
+| `da-qwerty` `fi-qwerty` `no-qwerty` `is-qwerty` `sme-qwerty` | Danish, Finnish, Norwegian, Icelandic, Northern Sámi layouts (each on top of `sv-qwerty`) | follow-up PRs, one at a time |
+| `sv-screenshots` | Paparazzi render tests for the Swedish layout | mocks / never PR'd as-is |
+| `sv-app-extras` | offline autocorrect + Vosk dictation, app module only | sideload build, **not** a PR (adds a dependency) |
 
-## Usage
-
-The `app` module wraps the keyboard into an Android IME app, which can be installed on any Android device
-
-The `ui` module is an Android library that contains all the actual keyboard UI code:
-
-Use the [Lp3Keyboard](ui/src/main/java/com/thelightphone/lp3Keyboard/ui/Lp3Keyboard.kt) composable for "embedded" usage (used in LightOS with some auxiliary UI around it)
-```kotlin
-@Composable
-fun Lp3Keyboard(
-    layout: Layout,
-    options: KeyboardOptions,
-    callback: Lp3KeyboardCallback,
-    swipeCallback: Lp3KeyboardSwipeCallback<*>?
-) 
-```
-
-Use the [Lp3KeyboardWrapper](ui/src/main/java/com/thelightphone/lp3Keyboard/ui/Lp3KeyboardWrapper.kt) composable for a self-contained version (includes a dismiss button)
-```kotlin
-@Composable
-fun Lp3KeyboardWrapper(
-    layout: Layout,
-    keyboardOptions: KeyboardOptions,
-    layoutOptions: LayoutOptions,
-    callback: Lp3KeyboardCallback,
-    swipeCallback: Lp3KeyboardSwipeCallback<*>?
-) 
-```
-
-Use the [Lp3RawKeyboardView](ui/src/main/java/com/thelightphone/lp3Keyboard/ui/Lp3KeyboardView.kt) view for mixing in with classic Android views in a Java environment
-```kotlin
-open class Lp3RawKeyboardView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-) 
-```
-
-Use the [Lp3KeyboardView](ui/src/main/java/com/thelightphone/lp3Keyboard/ui/Lp3KeyboardView.kt) view for mixing in with classic Android views in Kotlin
-```kotlin
-class Lp3RawKeyboardView<T>(context: Context, private val viewModel: Lp3KeyboardViewModel<T>) 
-```
+Layouts differ from Swedish only where the language does — e.g. Danish row 2 ends
+`…l æ ø`, Norwegian `…l ø æ` (the one detail that must not be swapped).
