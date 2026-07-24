@@ -37,6 +37,42 @@ import com.thelightphone.lp3Keyboard.ui.layout.LayoutRegistryItem
 
 // Based on https://github.com/THEAccess/compose-keyboard-ime
 
+/**
+ * Download/remove the offline Swedish Vosk model. Once installed, the mic key on
+ * the Swedish layout dictates fully on-device (audio never leaves the phone).
+ */
+@Composable
+fun SwedishVoiceModelRow() {
+    val ctx = LocalContext.current
+    var installed by remember { mutableStateOf(VoiceModel.isInstalled(ctx, VoiceModel.SV_CODE)) }
+    var progress by remember { mutableStateOf(-1) }
+    var error by remember { mutableStateOf<String?>(null) }
+    when {
+        installed -> Button(modifier = Modifier.fillMaxWidth(), onClick = {
+            VoiceModel.remove(ctx, VoiceModel.SV_CODE)
+            installed = false
+        }) {
+            Text(text = "Remove Swedish voice model")
+        }
+
+        progress >= 0 -> Text(text = "Downloading… $progress%")
+
+        else -> Button(modifier = Modifier.fillMaxWidth(), onClick = {
+            error = null
+            progress = 0
+            VoiceModel.install(
+                ctx, VoiceModel.SV_CODE, VoiceModel.SV_URL,
+                onProgress = { progress = it },
+                onDone = { progress = -1; installed = true },
+                onError = { progress = -1; error = it },
+            )
+        }) {
+            Text(text = "Download Swedish voice model (${VoiceModel.SV_SIZE_LABEL})")
+        }
+    }
+    error?.let { Text(text = "Download failed: $it") }
+}
+
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,6 +110,9 @@ fun Options() {
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = "3. Choose layout")
         LayoutPicker()
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(text = "4. Swedish voice dictation (offline)")
+        SwedishVoiceModelRow()
         Spacer(modifier = Modifier.height(16.dp))
         TextField(
             value = text,

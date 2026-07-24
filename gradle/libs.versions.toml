@@ -1,4 +1,5 @@
 [versions]
+vosk = "0.3.47"
 agp = "8.2.2"
 coreKtx = "1.12.0"
 kotlin = "2.0.0"
@@ -13,6 +14,7 @@ lifecycle = "2.8.7"
 mockk = "1.13.13"
 
 [libraries]
+vosk-android = { group = "com.alphacephei", name = "vosk-android", version.ref = "vosk" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
 androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }

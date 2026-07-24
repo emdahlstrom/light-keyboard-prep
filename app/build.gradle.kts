@@ -46,6 +46,9 @@ dependencies {
     implementation(libs.androidx.compose.material)
     implementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.activity.compose)
+    // Offline on-device speech recognition (native libs ~10MB in the APK; the
+    // Swedish model is downloaded on demand, see VoiceModel).
+    implementation(libs.vosk.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
