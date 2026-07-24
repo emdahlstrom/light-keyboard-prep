@@ -100,6 +100,13 @@ object EnShared {
     }
 
     val extendedCharMapping = mapOf(
+        // sami layouts put á/š/č where q/w/x sit; the evicted letters come back here
+        'á'.code to listOf(listOf('q')),
+        'Á'.code to listOf(listOf('Q')),
+        'š'.code to listOf(listOf('w')),
+        'Š'.code to listOf(listOf('W')),
+        'č'.code to listOf(listOf('x')),
+        'Č'.code to listOf(listOf('X')),
         'A'.code to listOf(
             listOf('À', 'Á', 'Â', 'Ä', 'Æ'),
             listOf('Ã', 'Å', 'Ā', 'Ă', 'Ą'),
