@@ -1,6 +1,7 @@
 package com.thelightphone.lp3Keyboard.ui
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -14,6 +15,7 @@ import org.junit.runner.Description
  * with "Module with the Main dispatcher had failed to initialize" before any
  * assertion is reached.
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 class MainDispatcherRule(
     private val dispatcher: TestDispatcher = StandardTestDispatcher()
 ) : TestWatcher() {
