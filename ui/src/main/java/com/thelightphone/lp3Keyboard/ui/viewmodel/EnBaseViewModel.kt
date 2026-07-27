@@ -71,11 +71,39 @@ abstract class EnBaseViewModel<SwipeResult>(
     private val heldSpecialKeys = mutableMapOf<SpecialKey, Job>()
     private val heldKeys = mutableMapOf<Int, Job>()
 
+    /**
+     * Code of the key whose long press opened the currently showing
+     * [EnShared.ExtendedCharKeyboard], or null.
+     *
+     * The gesture that opened the layout is still in flight when the swap
+     * happens: the finger is down on a key that the swap removes from the
+     * composition, so Compose ends that gesture with a cancel rather than a
+     * release. Both endings belong to the long press we already handled — they
+     * must neither type the root letter nor tear down the layout the long press
+     * just opened.
+     */
+    private var extendedCharRoot: Int? = null
+
     override fun cancelHeldKeys() {
         heldSpecialKeys.values.forEach { it.cancel() }
         heldSpecialKeys.clear()
         heldKeys.values.forEach { it.cancel() }
         heldKeys.clear()
+        extendedCharRoot = null
+    }
+
+    /**
+     * Swallow the trailing release/cancel of the long press that opened the
+     * extended-char layout. Returns true when [code] is that root key and the
+     * layout is still showing; otherwise clears the stale marker and lets the
+     * caller handle the event normally, so a later ordinary tap on the root
+     * letter still types.
+     */
+    private fun consumeExtendedCharRootGesture(code: Int): Boolean {
+        if (extendedCharRoot != code) return false
+        val stillShowing = layoutFlow.value is EnShared.ExtendedCharKeyboard
+        extendedCharRoot = null
+        return stillShowing
     }
 
     var capsMode: CapsMode = CapsMode.Off
@@ -102,6 +130,7 @@ abstract class EnBaseViewModel<SwipeResult>(
     }
 
     override fun onKeyReleased(code: Int) {
+        if (consumeExtendedCharRootGesture(code)) return
         heldKeys.remove(code)?.apply {
             cancel()
             return // swallow on key released if held
@@ -119,10 +148,17 @@ abstract class EnBaseViewModel<SwipeResult>(
     }
 
     override fun onKeyCancelled(code: Int) {
+        // The long press that opened the extended-char layout also disposes the
+        // key it started on, which arrives here as a cancel. Swallow it, or the
+        // layout is dismissed on the frame after it appears.
+        if (consumeExtendedCharRootGesture(code)) return
         // Finger left the key bounds — treat as the start of a swipe (or a
         // deliberate tap-cancel). Clean up press state but don't fire the IME
         // release, which is where text actually gets committed.
-        heldKeys.remove(code)?.cancel()
+        heldKeys.remove(code)?.apply {
+            cancel()
+            return // swallow on key cancelled if held, as onKeyReleased does
+        }
         if (layoutFlow.value is EnShared.ExtendedCharKeyboard) {
             setLayout(previousLayout ?: lowerCaseLayout)
         }
@@ -190,11 +226,15 @@ abstract class EnBaseViewModel<SwipeResult>(
     }
 
     override fun onKeyLongPressed(code: Int) {
-        heldKeys[code]?.cancel()
+        heldKeys.remove(code)?.cancel()
         if (EnShared.extendedCharMapping.containsKey(code)) {
             haptic()
             setLayout(EnShared.ExtendedCharKeyboard(code))
-            heldKeys[code] = viewModelScope.launch { }
+            // Mark the in-flight gesture as spent rather than parking a job in
+            // heldKeys: the key that owns the gesture is gone with the layout
+            // swap, so its release may never arrive to clear the entry, and a
+            // stale entry would swallow the next ordinary tap on this letter.
+            extendedCharRoot = code
             return
         }
         delegateCallback?.onKeyLongPressed(code)
