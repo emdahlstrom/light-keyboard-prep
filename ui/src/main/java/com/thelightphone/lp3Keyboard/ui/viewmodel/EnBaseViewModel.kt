@@ -122,7 +122,10 @@ abstract class EnBaseViewModel<SwipeResult>(
         // Finger left the key bounds — treat as the start of a swipe (or a
         // deliberate tap-cancel). Clean up press state but don't fire the IME
         // release, which is where text actually gets committed.
-        heldKeys.remove(code)?.cancel()
+        heldKeys.remove(code)?.apply {
+            cancel()
+            return // swallow on key cancelled if held, as onKeyReleased does
+        }
         if (layoutFlow.value is EnShared.ExtendedCharKeyboard) {
             setLayout(previousLayout ?: lowerCaseLayout)
         }
