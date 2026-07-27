@@ -88,7 +88,8 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
     // viewModelScope defaults to Dispatchers.Main, which has no Looper under
-    // plain JVM unit tests — the long-press paths need setMain to be reachable.
+    // plain JVM unit tests — the long-press and key-repeat paths need setMain
+    // to be reachable.
     testImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

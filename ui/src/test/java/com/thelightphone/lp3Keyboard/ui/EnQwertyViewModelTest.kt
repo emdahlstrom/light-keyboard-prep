@@ -70,6 +70,13 @@ class EnQwertyViewModelTest {
         onKeyCancelled(code)
     }
 
+    /**
+     * The long press swaps the whole layout, which disposes the key the finger
+     * is still resting on. Compose ends that gesture with a cancel, and before
+     * this was guarded the cancel dismissed the extended-char layout on the
+     * frame after it appeared — the keyboard visibly flashed and no character
+     * was ever typed.
+     */
     @Test
     fun `the cancel from the long press does not dismiss the extended char layout`() {
         vm.onKeyPressed('i'.code)
@@ -90,6 +97,21 @@ class EnQwertyViewModelTest {
     }
 
     @Test
+    fun `long press release does not dismiss the extended char layout`() {
+        vm.onKeyPressed('i'.code)
+        vm.onKeyLongPressed('i'.code)
+
+        vm.onKeyReleased('i'.code)
+
+        assertTrue(
+            "the release from the gesture that opened the layout must not dismiss it",
+            vm.layoutFlow.value is EnShared.ExtendedCharKeyboard
+        )
+        // The root letter itself is never committed by the long press.
+        verify(exactly = 0) { callback.onKeyReleased('i'.code) }
+    }
+
+    @Test
     fun `tapping an accent commits it and returns to the previous layout`() {
         longPressForAccents('i'.code)
 
@@ -98,6 +120,21 @@ class EnQwertyViewModelTest {
 
         verify(exactly = 1) { callback.onKeyReleased('î'.code) }
         assertSame(EnQwerty.LowerCaseLayout, vm.layoutFlow.value)
+    }
+
+    @Test
+    fun `ordinary tap on the root letter still types after a long press`() {
+        vm.onKeyPressed('i'.code)
+        vm.onKeyLongPressed('i'.code)
+        // Worst case: the disposed key never reports back at all, so the
+        // long-press marker is still set when the user leaves the layout.
+        vm.onSpecialKeyReleased(SpecialKey.Close)
+        assertSame(EnQwerty.LowerCaseLayout, vm.layoutFlow.value)
+
+        vm.onKeyPressed('i'.code)
+        vm.onKeyReleased('i'.code)
+
+        verify(exactly = 1) { callback.onKeyReleased('i'.code) }
     }
 
     @Test

@@ -11,8 +11,8 @@ import org.junit.runner.Description
 
 /**
  * `viewModelScope` runs on [Dispatchers.Main], which has no Looper backing it in
- * plain JVM unit tests. Without this the long-press paths blow up with
- * "Module with the Main dispatcher had failed to initialize" before any
+ * plain JVM unit tests. Without this the key-repeat and long-press paths blow up
+ * with "Module with the Main dispatcher had failed to initialize" before any
  * assertion is reached.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
