@@ -11,7 +11,7 @@ appcompat = "1.6.1"
 material = "1.11.0"
 lifecycle = "2.8.7"
 mockk = "1.13.13"
-coroutines = "1.8.1"
+coroutines = "1.7.3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }

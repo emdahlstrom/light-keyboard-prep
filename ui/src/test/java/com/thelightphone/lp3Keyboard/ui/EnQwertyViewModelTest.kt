@@ -120,12 +120,7 @@ class EnQwertyViewModelTest {
         assertSame(EnQwerty.LowerCaseLayout, vm.layoutFlow.value)
     }
 
-    /**
-     * A slow swipe rests on the first key past the long-press timeout, so a
-     * repeat job is parked in `heldKeys` when the finger moves off and the
-     * gesture ends in a cancel. Nothing may be committed: `onKeyCancelled`
-     * exists precisely so a drag does not type the keys it crosses.
-     */
+    // A dwell past the long press parks a repeat job, then the drag cancels it.
     @Test
     fun `a swipe that dwells on the first key commits nothing`() {
         vm.onKeyPressed('q'.code)
@@ -137,12 +132,7 @@ class EnQwertyViewModelTest {
         assertSame(EnQwerty.LowerCaseLayout, vm.layoutFlow.value)
     }
 
-    /**
-     * The layout swap disposes every key on screen, not just the one the long
-     * press started on. A second key already held for repeats therefore also
-     * reports a cancel while the extended-char layout is showing — and it must
-     * not tear the layout down either.
-     */
+    // The swap disposes every key, so a second held key also reports a cancel.
     @Test
     fun `a second held key disposed by the layout swap does not dismiss the popup`() {
         vm.onKeyPressed('q'.code)
