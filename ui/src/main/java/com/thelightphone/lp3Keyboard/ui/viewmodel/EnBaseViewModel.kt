@@ -44,6 +44,7 @@ abstract class EnBaseViewModel<SwipeResult>(
     val lowerCaseLayout: Layout,
     val upperCaseLayout: Layout,
     val capsLockedLayout: Layout,
+    val extendedCharMapping: Map<Int, List<List<Char>>> = EnShared.extendedCharMapping,
 ) : ViewModel(), Lp3KeyboardViewModel<SwipeResult> {
 
     var previousLayout: Layout? = null
@@ -209,9 +210,10 @@ abstract class EnBaseViewModel<SwipeResult>(
 
     override fun onKeyLongPressed(code: Int) {
         heldKeys[code]?.cancel()
-        if (EnShared.extendedCharMapping.containsKey(code)) {
+        val rows = extendedCharMapping[code]
+        if (rows != null) {
             haptic()
-            setLayout(EnShared.ExtendedCharKeyboard(code))
+            setLayout(EnShared.ExtendedCharKeyboard(rows))
             heldKeys[code] = viewModelScope.launch { }
             return
         }
